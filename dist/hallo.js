@@ -24,12 +24,11 @@
         placeholder: '',
         forceStructured: true,
         checkTouch: true,
-        defaultScrollPosition: '',
         touchScreen: null
       },
       _create: function() {
         var options, plugin, _ref,
-          _this = this;        
+          _this = this;
         this.id = this._generateUUID();
         if (this.options.checkTouch && this.options.touchScreen === null) {
           this.checkTouch();
@@ -53,29 +52,6 @@
         return this.originalContent = this.getContents();
       },
       _init: function() {
-        if(this.options.defaultScrollPosition == 'bottom')
-        {
-          if($(this.element).attr('id') == 'message')
-          {
-            $(this.element).parent().parent().scrollTop($(this.element).parent().height());
-          }
-          else if($(this.element).find('.thcomment').length > 0)
-          {
-            $(this.element).find('.thcomment').scrollTop($(this.element).find('.commentUoM').height());
-          }
-        }
-        else if(this.options.defaultScrollPosition == 'top')
-        {
-          if($(this.element).attr('id') == 'message')
-          {
-            $(this.element).parent().parent().scrollTop(0);
-          }
-          else
-          {
-            $(this.element).find('.thcomment').scrollTop(0);
-          }
-        } 
-        
         if (this.options.editable) {
           return this.enable();
         } else {
@@ -99,30 +75,6 @@
       disable: function() {
         var _this = this;
         this.element.attr("contentEditable", false);
-        
-        if(this.options.defaultScrollPosition == 'bottom')
-        {
-          if($(this.element).attr('id') == 'message')
-          {
-            $(this.element).parent().parent().scrollTop($(this.element).parent().height());
-          }
-          else if($(this.element).find('.thcomment').length > 0)
-          {
-            $(this.element).find('.thcomment').scrollTop($(this.element).find('.commentUoM').height());
-          }
-        }
-        else if(this.options.defaultScrollPosition == 'top')
-        {
-          if($(this.element).attr('id') == 'message')
-          {
-            $(this.element).parent().parent().scrollTop(0);
-          }
-          else
-          {
-            $(this.element).find('.thcomment').scrollTop(0);
-          }
-        }
-        
         this.element.off("focus", this._activated);
         this.element.off("blur", this._deactivated);
         this.element.off("keyup paste change", this._checkModified);
@@ -156,31 +108,6 @@
           return element.removeAttr('href');
         });
         this.element.attr("contentEditable", true);
-        
-        if(this.options.defaultScrollPosition == 'bottom')
-        {
-          if($(this.element).attr('id') == 'message')
-          {
-            $(this.element).parent().parent().scrollTop($(this.element).parent().height());
-          }
-          else if($(this.element).find('.thcomment').length > 0)
-          {
-            $(this.element).find('.thcomment').scrollTop($(this.element).find('.commentUoM').height());
-          }
-        }
-        else if(this.options.defaultScrollPosition == 'top')
-        {
-          if($(this.element).attr('id') == 'message')
-          {
-            $(this.element).parent().parent().scrollTop(0);
-          }
-          else
-          {
-            $(this.element).find('.thcomment').scrollTop(0);
-          }
-        }
-        
-        
         if (!jQuery.parseHTML(this.element.html())) {
           this.element.html(this.options.placeholder);
           jQuery(this.element).addClass('inPlaceholderMode');
@@ -373,7 +300,6 @@
         }
       },
       _checkModified: function(event) {
-       $(this).parent().scrollTop($(this).parent().scrollTop());
         var widget;
         widget = event.data;
         if (widget.isModified()) {
@@ -474,7 +400,6 @@
         }
       },
       _activated: function(event) {
-        $(this).attr('scrollpos',$(this).scrollTop())
         return event.data.turnOn();
       },
       _deactivated: function(event) {
@@ -782,11 +707,6 @@
         editor = this.element;
         return editor.bind('paste', this, function(event) {
           var lastContent, lastRange, widget;
-          var scrollPos = 0;
-          if($(this).attr('id') == 'content')
-          {
-            scrollPos = $(editor).parent().scrollTop();
-          }
           if (rangy.saveSelection === void 0) {
             throw new Error(rangyMessage);
             return;
@@ -801,12 +721,10 @@
             pasted = editor.html();
             cleanPasted = jQuery.htmlClean(pasted, _this.options);
             editor.html(lastContent);
-            $(editor).parent().scrollTop(scrollPos);
             rangy.restoreSelection(lastRange);
             if (cleanPasted !== '') {
               try {
                 return document.execCommand('insertHTML', false, cleanPasted);
-                $(editor).parent().scrollTop(scrollPos);
               } catch (_error) {
                 error = _error;
                 range = widget.options.editable.getSelection();
@@ -944,12 +862,12 @@
         lang: 'en',
         dialogOpts: {
           autoOpen: false,
-          width: 600,
+          width: 350,
           height: 'auto',
           modal: false,
           resizable: true,
           draggable: true,
-          dialogClass: 'htmledit-dialog'
+          dialogClass: 'panel panel-primary'
         },
         dialog: null,
         buttonCssClass: null
@@ -966,12 +884,12 @@
       },
       texts: null,
       populateToolbar: function($toolbar) {
-        var $buttonHolder, $buttonset, id, selector, widget;
+        var $buttonHolder, $buttonset, id, selector, widget,classid;
         widget = this;
         this.texts = this.translations[this.options.lang];
         this.options.toolbar = $toolbar;
         selector = "" + this.options.uuid + "-htmledit-dialog";
-        this.options.dialog = jQuery("<div>").attr('id', selector);
+        this.options.dialog = jQuery("<div class='well well-sm' id=\"" + selector + "\" ></div>");
         $buttonset = jQuery("<span>").addClass(widget.widgetName);
         id = "" + this.options.uuid + "-htmledit";
         $buttonHolder = jQuery('<span>');
@@ -1002,30 +920,27 @@
         return this.options.dialog.dialog("option", "title", this.texts.title);
       },
       _openDialog: function() {
-        var $editableEl, html, widget, xposition, yposition,
+       var $editableEl, html, widget, xposition, yposition,
           _this = this;
         widget = this;
         $editableEl = jQuery(this.options.editable.element);
-        xposition = $editableEl.offset().left + $editableEl.outerWidth() + 10;
-        yposition = this.options.toolbar.offset().top - jQuery(document).scrollTop();
-        this.options.dialog.dialog("option", "position", [xposition, yposition]);
-        this.options.editable.keepActivated(true);
+       this.options.editable.keepActivated(true);
         this.options.dialog.dialog("open");
         this.options.dialog.on('dialogclose', function() {
           jQuery('label', _this.button).removeClass('ui-state-active');
           _this.options.editable.element.focus();
           return _this.options.editable.keepActivated(false);
         });
-        this.options.dialog.html(jQuery("<textarea>").addClass('html_source'));
+        this.options.dialog.html(jQuery("<textarea cols='50' rows='8'>").addClass('html_source'));
         html = this.options.editable.element.html();
         this.options.dialog.children('.html_source').val(html);
-        this.options.dialog.prepend(jQuery("<button>" + this.texts.update + "</button>"));
+        this.options.dialog.append(jQuery("<button class='btn btn-primary'>" + this.texts.update + "</button>"));
         return this.options.dialog.on('click', 'button', function() {
           html = widget.options.dialog.children('.html_source').val();
           widget.options.editable.element.html(html);
           widget.options.editable.element.trigger('change');
           return false;
-        });
+        }); 
       },
       _closeDialog: function() {
         return this.options.dialog.dialog("close");
@@ -2358,15 +2273,15 @@
         defaultUrl: 'http://',
         dialogOpts: {
           autoOpen: false,
-          width: 540,
-          height: 200,
+          width: 400,
+          height: 130,
           title: "Enter Link",
           buttonTitle: "Insert",
           buttonUpdateTitle: "Update",
           modal: true,
           resizable: false,
           draggable: false,
-          dialogClass: 'hallolink-dialog'
+          dialogClass: 'panel panel-primary'
         },
         buttonCssClass: null
       },
@@ -2377,7 +2292,7 @@
         dialogId = "" + this.options.uuid + "-dialog";
         butTitle = this.options.dialogOpts.buttonTitle;
         butUpdateTitle = this.options.dialogOpts.buttonUpdateTitle;
-        dialog = jQuery("<div id=\"" + dialogId + "\">        <form action=\"#\" method=\"post\" class=\"linkForm\">          <input class=\"url\" type=\"text\" name=\"url\"            value=\"" + this.options.defaultUrl + "\" />          <input type=\"submit\" id=\"addlinkButton\" value=\"" + butTitle + "\"/>        </form></div>");
+        dialog = jQuery("<div class='well well-sm' id=\"" + dialogId + "\" >        <form action=\"#\" method=\"post\" class='navbar-form navbar-left' role='search'><div class='form-group'>    <div class='col-lg-6'><div class='input-group'><input class='form-control' type=\"text\" name=\"url\"  size='30'          value=\"" + this.options.defaultUrl + "\" />  <span class='input-group-btn'>        <input type=\"submit\" class='btn btn-primary' id=\"addlinkButton\" value=\"" + butTitle + "\" /> </span></div></div>      </div> </form></div>");       
         urlInput = jQuery('input[name=url]', dialog);
         isEmptyLink = function(link) {
           if ((new RegExp(/^\s*$/)).test(link)) {
