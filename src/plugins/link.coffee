@@ -11,15 +11,15 @@
       defaultUrl: 'http://'
       dialogOpts:
         autoOpen: false
-        width: 540
-        height: 200
+        width: 350
+        height: 130
         title: "Enter Link"
         buttonTitle: "Insert"
         buttonUpdateTitle: "Update"
         modal: true
         resizable: false
         draggable: false
-        dialogClass: 'hallolink-dialog'
+        dialogClass: 'panel panel-primary'
       buttonCssClass: null
 
     populateToolbar: (toolbar) ->
@@ -28,11 +28,10 @@
       dialogId = "#{@options.uuid}-dialog"
       butTitle = @options.dialogOpts.buttonTitle
       butUpdateTitle = @options.dialogOpts.buttonUpdateTitle
-      dialog = jQuery "<div id=\"#{dialogId}\">
-        <form action=\"#\" method=\"post\" class=\"linkForm\">
-          <input class=\"url\" type=\"text\" name=\"url\"
-            value=\"#{@options.defaultUrl}\" />
-          <input type=\"submit\" id=\"addlinkButton\" value=\"#{butTitle}\"/>
+      dialog = jQuery "<div class='well well-sm' id=\"#{dialogId}\">
+        <form action=\"#\" method=\"post\" class='navbar-form navbar-left'><div class='form-group'>
+         <input class='form-control' type=\"text\" name=\"url\" size='30' value=\"#{@options.defaultUrl}\" /><span class='input-group-btn'>
+          <input type=\"submit\" class='btn btn-primary' id=\"addlinkButton\" value=\"#{butTitle}\"/></span>
         </form></div>"
       urlInput = jQuery('input[name=url]', dialog)
 
