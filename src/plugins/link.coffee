@@ -11,7 +11,7 @@
       defaultUrl: 'http://'
       dialogOpts:
         autoOpen: false
-        width: 400
+        width: 350
         height: 130
         title: "Enter Link"
         buttonTitle: "Insert"
@@ -29,11 +29,9 @@
       butTitle = @options.dialogOpts.buttonTitle
       butUpdateTitle = @options.dialogOpts.buttonUpdateTitle
       dialog = jQuery "<div class='well well-sm' id=\"#{dialogId}\">
-        <form action=\"#\" method=\"post\" class='navbar-form navbar-left' role='search'><div class='form-group'>
-        <div class='col-lg-6'><div class='input-group'>
-          <input class='form-control' type=\"text\" name=\"url\" size='30'
-            value=\"#{@options.defaultUrl}\" /><span class='input-group-btn'>
-          <input type=\"submit\" class='btn btn-primary' id=\"addlinkButton\" value=\"#{butTitle}\"/></span></div></div>      </div>
+        <form action=\"#\" method=\"post\" class='navbar-form navbar-left'><div class='form-group'>
+         <input class='form-control' type=\"text\" name=\"url\" size='30' value=\"#{@options.defaultUrl}\" /><span class='input-group-btn'>
+          <input type=\"submit\" class='btn btn-primary' id=\"addlinkButton\" value=\"#{butTitle}\"/></span>
         </form></div>"
       urlInput = jQuery('input[name=url]', dialog)
 
