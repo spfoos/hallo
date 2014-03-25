@@ -24,6 +24,7 @@
         placeholder: '',
         forceStructured: true,
         checkTouch: true,
+        defaultScrollPosition: '',
         touchScreen: null
       },
       _create: function() {
@@ -52,6 +53,29 @@
         return this.originalContent = this.getContents();
       },
       _init: function() {
+        if(this.options.defaultScrollPosition == 'bottom')
+        {
+          if($(this.element).attr('id') == 'message')
+          {
+            $(this.element).parent().parent().scrollTop($(this.element).parent().height());
+          }
+          else if($(this.element).find('.thcomment').length > 0)
+          {
+            $(this.element).find('.thcomment').scrollTop($(this.element).find('.commentUoM').height());
+          }
+        }
+        else if(this.options.defaultScrollPosition == 'top')
+        {
+          if($(this.element).attr('id') == 'message')
+          {
+            $(this.element).parent().parent().scrollTop(0);
+          }
+          else
+          {
+            $(this.element).find('.thcomment').scrollTop(0);
+          }
+        } 
+        
         if (this.options.editable) {
           return this.enable();
         } else {
@@ -75,6 +99,30 @@
       disable: function() {
         var _this = this;
         this.element.attr("contentEditable", false);
+        
+        if(this.options.defaultScrollPosition == 'bottom')
+        {
+          if($(this.element).attr('id') == 'message')
+          {
+            $(this.element).parent().parent().scrollTop($(this.element).parent().height());
+          }
+          else if($(this.element).find('.thcomment').length > 0)
+          {
+            $(this.element).find('.thcomment').scrollTop($(this.element).find('.commentUoM').height());
+          }
+        }
+        else if(this.options.defaultScrollPosition == 'top')
+        {
+          if($(this.element).attr('id') == 'message')
+          {
+            $(this.element).parent().parent().scrollTop(0);
+          }
+          else
+          {
+            $(this.element).find('.thcomment').scrollTop(0);
+          }
+        }
+        
         this.element.off("focus", this._activated);
         this.element.off("blur", this._deactivated);
         this.element.off("keyup paste change", this._checkModified);
@@ -108,6 +156,31 @@
           return element.removeAttr('href');
         });
         this.element.attr("contentEditable", true);
+        
+        if(this.options.defaultScrollPosition == 'bottom')
+        {
+          if($(this.element).attr('id') == 'message')
+          {
+            $(this.element).parent().parent().scrollTop($(this.element).parent().height());
+          }
+          else if($(this.element).find('.thcomment').length > 0)
+          {
+            $(this.element).find('.thcomment').scrollTop($(this.element).find('.commentUoM').height());
+          }
+        }
+        else if(this.options.defaultScrollPosition == 'top')
+        {
+          if($(this.element).attr('id') == 'message')
+          {
+            $(this.element).parent().parent().scrollTop(0);
+          }
+          else
+          {
+            $(this.element).find('.thcomment').scrollTop(0);
+          }
+        }
+        
+        
         if (!jQuery.parseHTML(this.element.html())) {
           this.element.html(this.options.placeholder);
           jQuery(this.element).addClass('inPlaceholderMode');
@@ -300,6 +373,7 @@
         }
       },
       _checkModified: function(event) {
+       $(this).parent().scrollTop($(this).parent().scrollTop());
         var widget;
         widget = event.data;
         if (widget.isModified()) {
@@ -400,6 +474,7 @@
         }
       },
       _activated: function(event) {
+        $(this).attr('scrollpos',$(this).scrollTop())
         return event.data.turnOn();
       },
       _deactivated: function(event) {
@@ -707,6 +782,11 @@
         editor = this.element;
         return editor.bind('paste', this, function(event) {
           var lastContent, lastRange, widget;
+          var scrollPos = 0;
+          if($(this).attr('id') == 'content')
+          {
+            scrollPos = $(editor).parent().scrollTop();
+          }
           if (rangy.saveSelection === void 0) {
             throw new Error(rangyMessage);
             return;
@@ -721,10 +801,12 @@
             pasted = editor.html();
             cleanPasted = jQuery.htmlClean(pasted, _this.options);
             editor.html(lastContent);
+            $(editor).parent().scrollTop(scrollPos);
             rangy.restoreSelection(lastRange);
             if (cleanPasted !== '') {
               try {
                 return document.execCommand('insertHTML', false, cleanPasted);
+                $(editor).parent().scrollTop(scrollPos);
               } catch (_error) {
                 error = _error;
                 range = widget.options.editable.getSelection();

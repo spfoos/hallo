@@ -103,6 +103,7 @@ http://hallojs.org
       placeholder: ''
       forceStructured: true
       checkTouch: true
+      defaultScrollPosition: ''
       touchScreen: null
 
     _create: ->
@@ -127,6 +128,15 @@ http://hallojs.org
       @originalContent = @getContents()
 
     _init: ->
+      if @options.defaultScrollPosition is 'bottom'
+        if $(@element).attr("id") is 'message'
+          $(@element).parent().parent().scrollTop $(@element).parent().height()
+        else $(@element).find('.thcomment').scrollTop $(@element).find('.commentUoM').height()  if $(@element).find('.thcomment').length > 0
+      else if @options.defaultScrollPosition is 'top'
+        if $(@element).attr('id') is 'message'
+          $(@element).parent().parent().scrollTop 0
+        else
+          $(@element).find('.thcomment').scrollTop 0
       if @options.editable
         @enable()
       else
@@ -147,6 +157,15 @@ http://hallojs.org
     # Disable an editable
     disable: ->
       @element.attr "contentEditable", false
+      if @options.defaultScrollPosition is "bottom"
+        if $(@element).attr("id") is "message"
+          $(@element).parent().parent().scrollTop $(@element).parent().height()
+        else $(@element).find(".thcomment").scrollTop $(@element).find(".commentUoM").height()  if $(@element).find(".thcomment").length > 0
+      else if @options.defaultScrollPosition is "top"
+        if $(@element).attr("id") is "message"
+          $(@element).parent().parent().scrollTop 0
+        else
+          $(@element).find(".thcomment").scrollTop 0
       @element.off "focus", @_activated
       @element.off "blur", @_deactivated
       @element.off "keyup paste change", @_checkModified
@@ -174,7 +193,16 @@ http://hallojs.org
         element.removeAttr 'href'
 
       @element.attr "contentEditable", true
-
+      if @options.defaultScrollPosition is "bottom"
+        if $(@element).attr("id") is "message"
+          $(@element).parent().parent().scrollTop $(@element).parent().height()
+        else $(@element).find(".thcomment").scrollTop $(@element).find(".commentUoM").height()  if $(@element).find(".thcomment").length > 0
+      else if @options.defaultScrollPosition is "top"
+        if $(@element).attr("id") is "message"
+          $(@element).parent().parent().scrollTop 0
+        else
+          $(@element).find(".thcomment").scrollTop 0
+      
       unless jQuery.parseHTML(@element.html())
         @element.html this.options.placeholder
         jQuery(@element).addClass 'inPlaceholderMode'
@@ -338,6 +366,7 @@ http://hallojs.org
       @toolbar.hide() if hide
 
     _checkModified: (event) ->
+      $(this).parent().scrollTop $(this).parent().scrollTop()
       widget = event.data
       widget.setModified() if widget.isModified()
 
@@ -420,6 +449,7 @@ http://hallojs.org
         @setContents @options.placeholder
 
     _activated: (event) ->
+      $(this).attr('scrollpos',$(this).scrollTop())
       event.data.turnOn()
 
     _deactivated: (event) ->
