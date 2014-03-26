@@ -29,7 +29,7 @@
       },
       _create: function() {
         var options, plugin, _ref,
-          _this = this;
+          _this = this;        
         this.id = this._generateUUID();
         if (this.options.checkTouch && this.options.touchScreen === null) {
           this.checkTouch();
@@ -59,7 +59,7 @@
           {
             $(this.element).parent().parent().scrollTop($(this.element).parent().height());
           }
-          else if($(this.element).find('.thcomment').length > 0)
+          else //if($(this.element).find('.thcomment').length > 0)
           {
             $(this.element).find('.thcomment').scrollTop($(this.element).find('.commentUoM').height());
           }
@@ -106,7 +106,7 @@
           {
             $(this.element).parent().parent().scrollTop($(this.element).parent().height());
           }
-          else if($(this.element).find('.thcomment').length > 0)
+          else //if($(this.element).find('.thcomment').length > 0)
           {
             $(this.element).find('.thcomment').scrollTop($(this.element).find('.commentUoM').height());
           }
@@ -122,7 +122,7 @@
             $(this.element).find('.thcomment').scrollTop(0);
           }
         }
-        
+        this.element.off("paste", this._pasted);
         this.element.off("focus", this._activated);
         this.element.off("blur", this._deactivated);
         this.element.off("keyup paste change", this._checkModified);
@@ -163,7 +163,7 @@
           {
             $(this.element).parent().parent().scrollTop($(this.element).parent().height());
           }
-          else if($(this.element).find('.thcomment').length > 0)
+          else //if($(this.element).find('.thcomment').length > 0)
           {
             $(this.element).find('.thcomment').scrollTop($(this.element).find('.commentUoM').height());
           }
@@ -190,6 +190,7 @@
           });
         }
         if (!this.bound) {
+          this.element.off("paste", this, this._pasted);
           this.element.on("focus", this, this._activated);
           this.element.on("blur", this, this._deactivated);
           this.element.on("keyup paste change", this, this._checkModified);
@@ -379,6 +380,7 @@
         if (widget.isModified()) {
           return widget.setModified();
         }
+        
       },
       _keys: function(event) {
         var old, widget;
@@ -801,7 +803,7 @@
             pasted = editor.html();
             cleanPasted = jQuery.htmlClean(pasted, _this.options);
             editor.html(lastContent);
-            $(editor).parent().scrollTop(scrollPos);
+            $(editor).parent().scrollTop(scrollPos +  $('#content').height() + cleanPasted.length );
             rangy.restoreSelection(lastRange);
             if (cleanPasted !== '') {
               try {
@@ -944,12 +946,12 @@
         lang: 'en',
         dialogOpts: {
           autoOpen: false,
-          width: 350,
+          width: 600,
           height: 'auto',
           modal: false,
           resizable: true,
           draggable: true,
-          dialogClass: 'panel panel-primary'
+          dialogClass: 'htmledit-dialog'
         },
         dialog: null,
         buttonCssClass: null
@@ -971,7 +973,7 @@
         this.texts = this.translations[this.options.lang];
         this.options.toolbar = $toolbar;
         selector = "" + this.options.uuid + "-htmledit-dialog";
-        this.options.dialog = jQuery("<div class='well well-sm' id=\"" + selector + "\" ></div>");
+        this.options.dialog = jQuery("<div>").attr('id', selector);
         $buttonset = jQuery("<span>").addClass(widget.widgetName);
         id = "" + this.options.uuid + "-htmledit";
         $buttonHolder = jQuery('<span>');
@@ -1016,10 +1018,10 @@
           _this.options.editable.element.focus();
           return _this.options.editable.keepActivated(false);
         });
-        this.options.dialog.html(jQuery("<textarea cols='50' rows='8'>").addClass('html_source'));
+        this.options.dialog.html(jQuery("<textarea>").addClass('html_source'));
         html = this.options.editable.element.html();
         this.options.dialog.children('.html_source').val(html);
-        this.options.dialog.append(jQuery("<button class='btn btn-primary'>" + this.texts.update + "</button>"));
+        this.options.dialog.prepend(jQuery("<button>" + this.texts.update + "</button>"));
         return this.options.dialog.on('click', 'button', function() {
           html = widget.options.dialog.children('.html_source').val();
           widget.options.editable.element.html(html);
@@ -2358,15 +2360,15 @@
         defaultUrl: 'http://',
         dialogOpts: {
           autoOpen: false,
-          width: 350,
-          height: 130,
+          width: 540,
+          height: 200,
           title: "Enter Link",
           buttonTitle: "Insert",
           buttonUpdateTitle: "Update",
           modal: true,
           resizable: false,
           draggable: false,
-          dialogClass: 'panel panel-primary'
+          dialogClass: 'hallolink-dialog'
         },
         buttonCssClass: null
       },
@@ -2377,7 +2379,7 @@
         dialogId = "" + this.options.uuid + "-dialog";
         butTitle = this.options.dialogOpts.buttonTitle;
         butUpdateTitle = this.options.dialogOpts.buttonUpdateTitle;
-        dialog = jQuery("<div class='well well-sm' id=\"" + dialogId + "\">        <form action=\"#\" method=\"post\" class='navbar-form navbar-left'> <span class='input-group-btn'>         <input class='form-control' type=\"text\" name=\"url\"    size='30'        value=\"" + this.options.defaultUrl + "\" />          <input type=\"submit\" class='btn btn-primary' id=\"addlinkButton\" value=\"" + butTitle + "\"/> </span></form></div>");
+        dialog = jQuery("<div id=\"" + dialogId + "\">        <form action=\"#\" method=\"post\" class=\"linkForm\">          <input class=\"url\" type=\"text\" name=\"url\"            value=\"" + this.options.defaultUrl + "\" />          <input type=\"submit\" id=\"addlinkButton\" value=\"" + butTitle + "\"/>        </form></div>");
         urlInput = jQuery('input[name=url]', dialog);
         isEmptyLink = function(link) {
           if ((new RegExp(/^\s*$/)).test(link)) {
@@ -3185,10 +3187,10 @@
       }
     });
     return jQuery.widget('IKS.hallobuttonset', {
-      buttons: null,
       _create: function() {
         return this.element.addClass('ui-buttonset');
       },
+      buttons: null,
       _init: function() {
         return this.refresh();
       },

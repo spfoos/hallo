@@ -76,7 +76,7 @@
          
           # back in timne to the state before pasting
           editor.html lastContent
-          $(editor).parent().scrollTop scrollPos
+          $(editor).parent().scrollTop scrollPos + $("#content").height() + cleanPasted.length
           rangy.restoreSelection lastRange
           
           # paste tidy pasted content back
