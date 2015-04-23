@@ -48,7 +48,7 @@
       
       # bind paste handler on first call
       editor.bind 'paste', this, (event) =>
-       
+        scrollPos = $(editor).parent().scrollTop()  if $(this).attr("id") is "content" 
         # TODO: find out why this check always fails when placed directly
         # after jQuery.htmlClean check
         if rangy.saveSelection is undefined
@@ -76,6 +76,7 @@
          
           # back in timne to the state before pasting
           editor.html lastContent
+          $(editor).parent().scrollTop scrollPos + $("#content").height() + cleanPasted.length
           rangy.restoreSelection lastRange
           
           # paste tidy pasted content back
@@ -83,6 +84,7 @@
           if cleanPasted != ''
             try
               document.execCommand 'insertHTML', false, cleanPasted
+              $(editor).parent().scrollTop scrollPos
             catch error
               # most likely ie
               range = widget.options.editable.getSelection()
